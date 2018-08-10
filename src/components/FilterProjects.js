@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { projectData } from '../data/datasource'
+import { projectData } from '../data/datasource';
+import Project from './Project';
+
 
 /*  Advice:
    (1) Create the component's JSX by using .map() on `projectData`
@@ -24,34 +26,62 @@ import { projectData } from '../data/datasource'
  */
 
 class FilterProjects extends Component {
+  constructor(){
+    super();
+
+    this.state = {
+      projectType: 'all'
+    };
+  }
+
+  changeFilter = (e) => {
+    e.preventDefault();
+    let type = e.target.dataset.ptype;
+    this.setState({
+      projectType: type
+    })
+  }
 
   render() {
+    let typeOfProject = this.state.projectType
+    let projects = projectData.filter( function (project) {
+        if (typeOfProject === 'all') {
+          return project
+        } else if (typeOfProject === 'solo') {
+          return project.solo === true
+        } else {
+          return project.solo === false
+        }
+    });
 
     return (
       <section>
           <h4>Projects</h4>
 
           <div className="project-types-list">
-            <span data-ptype="all" className="project-type project-type--all project-type--selected">
+            <span data-ptype="all" className={ (this.state.projectType === "all") ? 'project-type project-type--all project-type--selected' : 'project-type project-type--all' } onClick={ this.changeFilter }>
               All
             </span>
 
-            <span data-ptype="solo" className="project-type project-type--solo ">
+            <span data-ptype="solo" className={ (this.state.projectType === "solo") ? 'project-type project-type--solo project-type--selected' : 'project-type project-type--solo' } onClick={ this.changeFilter }>
               <i className="ion-person"></i>Solo
             </span>
 
-            <span data-ptype="team" className="project-type project-type--team">
+            <span data-ptype="team" className={ (this.state.projectType === "team") ? 'project-type project-type--team project-type--selected' : 'project-type project-type--team' } onClick={ this.changeFilter }>
               <i className="ion-person-stalker"></i>Team
             </span>
           </div>
 
           <div className='projects-list'>
-
             {/* Step (1) --- .map() the projectData to JSX  */}
-
+            { projects.map(function(project){
+                return <Project name={ project.projectName } solo={ project.solo } />
+            })}
           </div>
         </section>
 
     );
   }
 }
+
+export default FilterProjects;
